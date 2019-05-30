@@ -6,6 +6,9 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
+import com.londonappbrewery.destini.models.Answer;
+import com.londonappbrewery.destini.models.Story;
+
 public class MainActivity extends AppCompatActivity {
 
 
@@ -31,7 +34,19 @@ public class MainActivity extends AppCompatActivity {
     Answer ansT3_1 = new Answer(R.string.T3_Ans1);
     Answer ansT3_2 = new Answer(R.string.T3_Ans2);
 
+      private int mStoryIndex;
 
+    protected void onSaveInstanceState(Bundle outState)
+    {
+        super.onSaveInstanceState(outState);
+        outState.putInt("StoryKey",mStoryIndex);
+    }
+    protected void onSaveInstanceState(Bundle outState)
+    {
+        super.onSaveInstanceState(outState);
+        outState.putInt("StoryKey",mStoryIndex);
+
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,10 +77,50 @@ public class MainActivity extends AppCompatActivity {
         ansT3_2.setChildStory(mT5);
 
 
+        mStoryTextView.setText(mStorySelected.getStoryID());
+        mAnswerTop.setText(mStorySelected.getAnswerTop().getAnswerID());
+        mAnswerBottom.setText(mStorySelected.getAnswerBottom().getAnswerID());
+
+
+
         // TODO: Coloque o evento do click do botão, caso precise colocar a visibilidade no botão invisivel utilize a função
         // do botão setVisibility(View.GONE):
 
 
+        mAnswerTop.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View view){
+                mStorySelected = mStorySelected.getAnswerTop().getChildStory();
+                mStoryTextView.setText(mStorySelected.getStoryID());
+                if(mStorySelected.getAnswerTop() == null){
+                    mAnswerTop.setVisibility(View.GONE);
+                    mAnswerBottom.setVisibility(View.GONE);
+                }else{
+                    mAnswerTop.setText(mStorySelected.getAnswerTop().getAnswerID());
+                    mAnswerBottom.setText(mStorySelected.getAnswerBottom().getAnswerID());
+                }
+            }
+        });
+
+        mAnswerBottom.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                mStorySelected = mStorySelected.getAnswerBottom().getChildStory();
+                mStoryTextView.setText(mStorySelected.getStoryID());
+                if(mStorySelected.getAnswerBottom() == null){
+                    mAnswerTop.setVisibility(View.GONE);
+                    mAnswerBottom.setVisibility(View.GONE);
+
+                }else{
+                    mAnswerBottom.setText(mStorySelected.getAnswerBottom().getAnswerID());
+                    mAnswerTop.setText(mStorySelected.getAnswerTop().getAnswerID());
+                }
+            }
+        });
+
+        //onCreate()
+        if(savedInstanceState!=null){
+            mStoryIndex = savedInstanceState.getInt("StoryKey");
+        }
     }
 
 }
