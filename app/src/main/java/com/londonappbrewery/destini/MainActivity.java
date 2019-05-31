@@ -9,6 +9,8 @@ import android.widget.TextView;
 import com.londonappbrewery.destini.models.Answer;
 import com.londonappbrewery.destini.models.Story;
 
+import java.io.Serializable;
+
 public class MainActivity extends AppCompatActivity {
 
 
@@ -20,7 +22,7 @@ public class MainActivity extends AppCompatActivity {
     //indice corrente da historia
     private Story mStorySelected;
 
-    Story mT1 = new Story(R.sting.T1_Stroy);
+    Story mT1 = new Story(R.string.T1_Story);
     Story mT2 = new Story(R.string.T2_Story);
     Story mT3 = new Story(R.string.T3_Story);
     Story mT4 = new Story(R.string.T4_End);
@@ -34,19 +36,7 @@ public class MainActivity extends AppCompatActivity {
     Answer ansT3_1 = new Answer(R.string.T3_Ans1);
     Answer ansT3_2 = new Answer(R.string.T3_Ans2);
 
-      private int mStoryIndex;
-
-    protected void onSaveInstanceState(Bundle outState)
-    {
-        super.onSaveInstanceState(outState);
-        outState.putInt("StoryKey",mStoryIndex);
-    }
-    protected void onSaveInstanceState(Bundle outState)
-    {
-        super.onSaveInstanceState(outState);
-        outState.putInt("StoryKey",mStoryIndex);
-
-    }
+    //private int mStoryIndex;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -76,25 +66,33 @@ public class MainActivity extends AppCompatActivity {
         ansT3_1.setChildStory(mT6);
         ansT3_2.setChildStory(mT5);
 
-
-        mStoryTextView.setText(mStorySelected.getStoryID());
-        mAnswerTop.setText(mStorySelected.getAnswerTop().getAnswerID());
-        mAnswerBottom.setText(mStorySelected.getAnswerBottom().getAnswerID());
-
-
-
         // TODO: Coloque o evento do click do botão, caso precise colocar a visibilidade no botão invisivel utilize a função
         // do botão setVisibility(View.GONE):
-
+        if(savedInstanceState!=null) {
+            mStorySelected = (Story) savedInstanceState.getSerializable("StoryKey");
+            mStoryTextView.setText(mStorySelected.getStoryID());
+            if(mStorySelected.getAnswerTop() == null){
+                mAnswerTop.setVisibility(View.GONE);
+                mAnswerBottom.setVisibility(View.GONE);
+            }else{
+                mAnswerTop.setText(mStorySelected.getAnswerTop().getAnswerID());
+                mAnswerBottom.setText(mStorySelected.getAnswerBottom().getAnswerID());
+            }
+        }else{
+            mStorySelected = mT1;
+            mStoryTextView.setText(mStorySelected.getStoryID());
+            mAnswerTop.setText(mStorySelected.getAnswerTop().getAnswerID());
+            mAnswerBottom.setText(mStorySelected.getAnswerBottom().getAnswerID());
+        }
 
         mAnswerTop.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View view){
+            public void onClick(View view) {
                 mStorySelected = mStorySelected.getAnswerTop().getChildStory();
                 mStoryTextView.setText(mStorySelected.getStoryID());
-                if(mStorySelected.getAnswerTop() == null){
+                if (mStorySelected.getAnswerTop() == null) {
                     mAnswerTop.setVisibility(View.GONE);
                     mAnswerBottom.setVisibility(View.GONE);
-                }else{
+                } else {
                     mAnswerTop.setText(mStorySelected.getAnswerTop().getAnswerID());
                     mAnswerBottom.setText(mStorySelected.getAnswerBottom().getAnswerID());
                 }
@@ -106,21 +104,22 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View view) {
                 mStorySelected = mStorySelected.getAnswerBottom().getChildStory();
                 mStoryTextView.setText(mStorySelected.getStoryID());
-                if(mStorySelected.getAnswerBottom() == null){
+                if (mStorySelected.getAnswerBottom() == null) {
                     mAnswerTop.setVisibility(View.GONE);
                     mAnswerBottom.setVisibility(View.GONE);
 
-                }else{
+                } else {
                     mAnswerBottom.setText(mStorySelected.getAnswerBottom().getAnswerID());
                     mAnswerTop.setText(mStorySelected.getAnswerTop().getAnswerID());
                 }
             }
         });
 
-        //onCreate()
-        if(savedInstanceState!=null){
-            mStoryIndex = savedInstanceState.getInt("StoryKey");
+    }
+        protected void onSaveInstanceState(Bundle outState){
+            super.onSaveInstanceState(outState);
+            outState.putSerializable("StoryKey",(Serializable) mStorySelected);
         }
     }
 
-}
+
